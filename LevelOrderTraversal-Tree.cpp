@@ -1,6 +1,7 @@
 #include<iostream>
 #include<vector>
 #include<queue>
+#include<stack>
 using namespace std;
 struct TreeNode
 {
@@ -76,8 +77,65 @@ vector<vector<int> > levelOrder(TreeNode* root)
     return res;
 }
 
+vector<vector<int> > bottomLevelOrder(TreeNode* root)
+{
+    stack<vector<int> > s;
+    queue<TreeNode*> q;
+    vector<vector<int> > res;
+    vector<int> cur;
 
+    if(!root)
+        return res;
 
+    q.push(root);
+
+    while(!q.empty())
+    {
+          int c=q.size();
+
+       for(int k=0;k<c;k++)
+       {
+           int g = q.front()->val;
+           cur.push_back(g);
+
+            TreeNode* t = q.front();
+
+            if(t->left)
+              q.push(t->left);
+
+            if(t->right)
+              q.push(t->right);
+
+           q.pop();
+       }
+
+       s.push(cur);
+       cur.clear();
+    }
+
+    for(;!s.empty();s.pop())
+    {
+        res.push_back(s.top());
+    }
+
+    return res;
+}
+int depth(TreeNode* root)
+{
+    if(!root)
+        return 0;
+    else
+        return 1+max(depth(root->left),depth(root->right));
+
+}
+void bottomLevel(vector<vector<int> > &r,TreeNode* root,int level)
+{
+    if(root){
+      r[level].push_back(root->val);
+   bottomLevel(r,root->left,level-1);
+   bottomLevel(r,root->right,level-1);
+    }
+}
 
 int main()
 {
@@ -91,7 +149,9 @@ int main()
     }
     displayTree(root);
 
-    vector<vector<int> > r=levelOrder(root);
+    int d = depth(root);
+    vector<vector<int> > r(d,vector<int> {});
+    bottomLevel(r,root,d-1);
 
     cout<<"\n";
     for(int i=0;i<r.size();i++){
@@ -102,3 +162,12 @@ int main()
     }
     return 0;
 }
+
+
+/***
+          Bottom Level Traversal can also be made by using recursion (the only condition is to calculate depth of tree)
+
+
+
+
+**/
